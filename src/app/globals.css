@@ -1,26 +1,254 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@theme {
+  /* Custom Color Palette - Washed Blue */
+  --color-washed-blue-50: #f0f3ff;
+  --color-washed-blue-100: #d0daff;
+  --color-washed-blue-200: #bac9ff;
+  --color-washed-blue-300: #9ab0ff;
+  --color-washed-blue-400: #86a1ff;
+  --color-washed-blue-500: #6889ff;
+  --color-washed-blue-600: #5f7de8;
+  --color-washed-blue-700: #4a61b5;
+  --color-washed-blue-800: #394b8c;
+  --color-washed-blue-900: #2c3a6b;
+
+  /* Custom Color Palette - Washed Purple */
+  --color-washed-purple-50: #f8f7ff;
+  --color-washed-purple-100: #e8e7ff;
+  --color-washed-purple-200: #dddcff;
+  --color-washed-purple-300: #cecbff;
+  --color-washed-purple-400: #c5c1ff;
+  --color-washed-purple-500: #b6b2ff;
+  --color-washed-purple-600: #a6a2e8;
+  --color-washed-purple-700: #817eb5;
+  --color-washed-purple-800: #64628c;
+  --color-washed-purple-900: #4c4b6b;
+
+  /* Custom Color Palette - Primary Blue */
+  --color-primary-blue-50: #e6f0ff;
+  --color-primary-blue-100: #b2d1ff;
+  --color-primary-blue-200: #8cbaff;
+  --color-primary-blue-300: #589bff;
+  --color-primary-blue-400: #3787ff;
+  --color-primary-blue-500: #0569ff;
+  --color-primary-blue-600: #0560e8;
+  --color-primary-blue-700: #044bb5;
+  --color-primary-blue-800: #033a8c;
+  --color-primary-blue-900: #022c6b;
+
+  /* Custom Color Palette - Primary Purple */
+  --color-primary-purple-50: #f1e6ff;
+  --color-primary-purple-100: #d3b0ff;
+  --color-primary-purple-200: #bd8aff;
+  --color-primary-purple-300: #9f54ff;
+  --color-primary-purple-400: #8d33ff;
+  --color-primary-purple-500: #7000ff;
+  --color-primary-purple-600: #6600e8;
+  --color-primary-purple-700: #5000b5;
+  --color-primary-purple-800: #3e008c;
+  --color-primary-purple-900: #2f006b;
+
+  /* Neutrals Color Palette */
+  --color-neutrals-1: #ffffff;
+  --color-neutrals-2: #fcfcfd;
+  --color-neutrals-3: #f5f5f6;
+  --color-neutrals-4: #f0f0f1;
+  --color-neutrals-5: #d9d9dc;
+  --color-neutrals-6: #c0bfc4;
+  --color-neutrals-7: #8d8c95;
+  --color-neutrals-8: #5b5966;
+  --color-neutrals-9: #464553;
+  --color-neutrals-10: #282637;
+  --color-neutrals-11: #201f30;
+  --color-neutrals-12: #161427;
+  --color-neutrals-13: #020014;
+
+  /* Brand Colors */
+  --color-brand-washed-purple: #b5b2ff;
+  --color-brand-washed-blue: #6889ff;
+  --color-brand-primary-blue: #0469ff;
+  --color-brand-primary-purple: #7000ff;
+  --color-brand-dark: #030014;
+
+  /* Border Radius */
+  --radius: 0.5rem;
+  --radius-lg: var(--radius);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-sm: calc(var(--radius) - 4px);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+html {
+  scroll-behavior: smooth;
 }
 
-@media (prefers-color-scheme: dark) {
+html,
+body {
+  height: 100%;
+}
+
+/* Scroll margin for sections with fixed header */
+section[id] {
+  scroll-margin-top: 150px;
+}
+
+@layer base {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: 0 0% 100%;
+    --foreground: 224 71.4% 4.1%;
+    --card: 0 0% 100%;
+    --card-foreground: 224 71.4% 4.1%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 224 71.4% 4.1%;
+    --primary: 266, 100%, 50%;
+    --primary-foreground: 210 20% 98%;
+    --secondary: 220 14.3% 95.9%;
+    --secondary-foreground: 220.9 39.3% 11%;
+    --muted: 220 14.3% 95.9%;
+    --muted-foreground: 220 8.9% 46.1%;
+    --accent: 220 14.3% 95.9%;
+    --accent-foreground: 220.9 39.3% 11%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 20% 98%;
+    --border: 220 13% 91%;
+    --input: 220 13% 91%;
+    --ring: 262.1 83.3% 57.8%;
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: 249 100% 3.9%;
+    --foreground: 248 100% 88%;
+    --card: 224 71.4% 4.1%;
+    --card-foreground: 210 20% 98%;
+    --popover: 224 71.4% 4.1%;
+    --popover-foreground: 210 20% 98%;
+    --primary: 266, 100%, 50%;
+    --primary-foreground: 210 20% 98%;
+    --secondary: 215 27.9% 16.9%;
+    --secondary-foreground: 210 20% 98%;
+    --muted: 215 27.9% 16.9%;
+    --muted-foreground: 217.9 10.6% 30.9%;
+    --accent: 215 27.9% 16.9%;
+    --accent-foreground: 210 20% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 20% 98%;
+    --border: 247, 18.3%, 18.2%;
+    --input: 215 27.9% 16.9%;
+    --ring: 263.4 70% 50.4%;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer base {
+  * {
+    border-color: hsl(var(--border));
+  }
+  body {
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+  }
+}
+
+.animate-slide {
+  animation: 15s slide linear infinite;
+}
+
+@keyframes slide {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-100%);
+  }
+}
+
+.ce-popover-item:hover {
+  background-color: hsl(var(--muted) / 0.4);
+  transition: all;
+}
+
+.ce-popover--opened {
+  background-color: hsl(var(--card));
+  outline: none;
+  border-color: hsl(var(--border));
+}
+
+.dark .ce-popover--opened {
+  color: hsl(var(--muted));
+}
+
+.ce-popover-item__icon {
+  color: white;
+  font-weight: 500;
+  box-shadow: none;
+}
+
+.dark .ce-popover-item__icon {
+  background-color: hsl(var(--background));
+  border-width: 1px;
+}
+
+.ce-popover-item__title {
+  font-weight: 400;
+}
+
+.dark .ce-popover-item__title {
+  color: #8d8c95;
+}
+
+.cdx-search-field {
+  background-color: hsl(var(--background));
+}
+
+.ce-toolbar__content,
+.ce-block__content {
+  max-width: 750px;
+}
+
+.editorFocus {
+  border: none;
+  outline: none;
+}
+
+/* .dotPattern {
+  background-image: radial-gradient(rgb(25, 25, 25) 1px, transparent 1px);
+  background-size: 30px 30px;
+} */
+
+.ql-toolbar::-webkit-scrollbar {
+  display: none;
+}
+
+.ql-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(255, 255, 255, 0.4);
+  backdrop-filter: blur(12px);
+  z-index: 40;
+  position: sticky;
+  top: 0;
+  border: none !important;
+  left: 0;
+  right: 0;
+}
+
+.dark .ql-toolbar {
+  background-color: hsl(var(--background) / 0.7);
+}
+
+.ql-formats {
+  display: flex;
+  flex-shrink: 0;
+}
+
+.ql-container {
+  border: none !important;
+}
+
+.dark .ql-editor > p,
+.dark .ql-editor > ol,
+.dark .ql-editor > ul {
+  color: #817eb5;
 }
