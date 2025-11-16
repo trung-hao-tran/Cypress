@@ -308,3 +308,26 @@ section[id] {
 .dark .ql-editor > ul {
   color: #817eb5;
 }
+
+/* Quill placeholder styles */
+.ql-editor.ql-blank::before {
+  color: #8d8c95;
+  font-style: normal;
+  opacity: 0.6;
+}
+
+.dark .ql-editor.ql-blank::before {
+  color: #8d8c95;
+  opacity: 0.5;
+}
+
+/* Hide native scrollbars completely */
+/* For WebKit browsers (Chrome, Safari, Edge) */
+::-webkit-scrollbar {
+  display: none;
+}
+
+/* For Firefox */
+* {
+  scrollbar-width: none;
+}

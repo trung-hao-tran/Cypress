@@ -1,0 +1,113 @@
+import React from 'react';
+import { Subscription } from '@/lib/supabase/supabase.types';
+import { createServerClient } from '@supabase/ssr';
+import { cookies } from 'next/headers';
+import db from '@/lib/supabase/db';
+import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
+import CypressProfileIcon from '../icons/cypressProfileIcon';
+import ModeToggle from '../global/mode-toggle';
+import UserProfile from '../user-profile/user-profile';
+import LogoutButton from '../global/logout-button';
+import { LogOut } from 'lucide-react';
+
+interface UserCardProps {
+  subscription: Subscription | null;
+}
+
+const UserCard: React.FC<UserCardProps> = async ({ subscription }) => {
+  const cookieStore = await cookies();
+
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        getAll() {
+          return cookieStore.getAll();
+        },
+        setAll(cookiesToSet) {
+          try {
+            cookiesToSet.forEach(({ name, value, options }) =>
+              cookieStore.set(name, value, options)
+            );
+          } catch {
+            // The `setAll` method was called from a Server Component.
+            // This can be ignored if you have middleware refreshing
+            // user sessions.
+          }
+        },
+      },
+    }
+  );
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) return;
+
+  const response = await db.query.users.findFirst({
+    where: (u, { eq }) => eq(u.id, user.id),
+  });
+
+  let avatarPath;
+  if (!response) return;
+
+  if (!response.avatarUrl) avatarPath = '';
+  else {
+    avatarPath = supabase.storage
+      .from('avatars')
+      .getPublicUrl(response.avatarUrl)?.data.publicUrl;
+  }
+
+  const profile = {
+    ...response,
+    avatarUrl: avatarPath,
+  };
+
+  return (
+    <article
+      className="hidden
+      sm:flex
+      justify-between
+      items-center
+      px-4
+      py-2
+      dark:bg-Neutrals/neutrals-12
+      rounded-3xl
+  "
+    >
+      <UserProfile>
+        <aside className="flex justify-center items-center gap-2 cursor-pointer hover:opacity-80 transition-opacity">
+          <Avatar>
+            <AvatarImage src={profile.avatarUrl} />
+            <AvatarFallback>
+              <CypressProfileIcon />
+            </AvatarFallback>
+          </Avatar>
+          <div className="flex flex-col">
+            <span className="text-muted-foreground">
+              {subscription?.status === 'active' ? 'Pro Plan' : 'Free Plan'}
+            </span>
+            <small
+              className="w-[100px]
+            overflow-hidden
+            overflow-ellipsis
+            "
+            >
+              {profile.email}
+            </small>
+          </div>
+        </aside>
+      </UserProfile>
+      <div className="flex items-center justify-center">
+        <LogoutButton>
+          <LogOut />
+        </LogoutButton>
+        <ModeToggle />
+      </div>
+    </article>
+  );
+};
+
+export default UserCard;
