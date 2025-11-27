@@ -6,8 +6,15 @@ import db from '@/lib/supabase/db';
 import { redirect } from 'next/navigation';
 import DashboardSetup from '@/components/dashboard-setup/dashboard-setup';
 import { getUserSubscriptionStatus } from '@/lib/supabase/queries';
+import PaymentSuccess from '@/components/global/payment-success';
 
-const DashboardPage = async () => {
+const DashboardPage = async ({
+  searchParams,
+}: {
+  searchParams: Promise<{ redirect_status?: string }>;
+}) => {
+  const params = await searchParams;
+  const paymentSucceeded = params.redirect_status === 'succeeded';
   const cookieStore = await cookies();
 
   const supabase = createServerClient(
@@ -66,7 +73,9 @@ const DashboardPage = async () => {
       </div>
     );
 
-  redirect(`/dashboard/${workspace.id}`);
+  // Preserve query params when redirecting
+  const queryString = params.redirect_status ? `?redirect_status=${params.redirect_status}` : '';
+  redirect(`/dashboard/${workspace.id}${queryString}`);
 };
 
 export default DashboardPage;

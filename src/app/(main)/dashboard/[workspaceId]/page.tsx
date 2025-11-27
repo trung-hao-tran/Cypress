@@ -4,6 +4,7 @@ import QuillEditor from '@/components/quill-editor/quill-editor';
 import { getWorkspaceDetails } from '@/lib/supabase/queries';
 import { redirect } from 'next/navigation';
 import React from 'react';
+import PaymentSuccess from '@/components/global/payment-success';
 
 const Workspace = async ({ params }: { params: Promise<{ workspaceId: string }> }) => {
   const { workspaceId } = await params;
@@ -11,6 +12,7 @@ const Workspace = async ({ params }: { params: Promise<{ workspaceId: string }> 
   if (error || !data.length) redirect('/dashboard');
   return (
     <div className="relative">
+      <PaymentSuccess />
       <QuillEditor
         dirType="workspace"
         fileId={workspaceId}

@@ -45,12 +45,11 @@ export const customersRelations = relations(customers, ({one}) => ({
 	}),
 }));
 
-export const pricesRelations = relations(prices, ({one, many}) => ({
+export const pricesRelations = relations(prices, ({one}) => ({
 	product: one(products, {
 		fields: [prices.productId],
 		references: [products.id]
 	}),
-	subscriptions: many(subscriptions),
 }));
 
 export const productsRelations = relations(products, ({many}) => ({
@@ -58,10 +57,6 @@ export const productsRelations = relations(products, ({many}) => ({
 }));
 
 export const subscriptionsRelations = relations(subscriptions, ({one}) => ({
-	price: one(prices, {
-		fields: [subscriptions.priceId],
-		references: [prices.id]
-	}),
 	usersInAuth: one(usersInAuth, {
 		fields: [subscriptions.userId],
 		references: [usersInAuth.id]

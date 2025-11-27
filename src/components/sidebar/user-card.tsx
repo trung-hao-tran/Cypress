@@ -1,69 +1,47 @@
-import React from 'react';
-import { Subscription } from '@/lib/supabase/supabase.types';
-import { createServerClient } from '@supabase/ssr';
-import { cookies } from 'next/headers';
-import db from '@/lib/supabase/db';
+'use client';
+import React, { useEffect, useState } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import CypressProfileIcon from '../icons/cypressProfileIcon';
 import ModeToggle from '../global/mode-toggle';
 import UserProfile from '../user-profile/user-profile';
 import LogoutButton from '../global/logout-button';
 import { LogOut } from 'lucide-react';
+import { useSupabaseUser } from '@/lib/providers/supabase-user-provider';
+import { createClient } from '@/lib/supabase/client';
 
-interface UserCardProps {
-  subscription: Subscription | null;
-}
+const UserCard: React.FC = () => {
+  const { user, subscription } = useSupabaseUser();
+  const [avatarUrl, setAvatarUrl] = useState('');
 
-const UserCard: React.FC<UserCardProps> = async ({ subscription }) => {
-  const cookieStore = await cookies();
+  useEffect(() => {
+    const loadAvatar = async () => {
+      if (!user) return;
 
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        getAll() {
-          return cookieStore.getAll();
-        },
-        setAll(cookiesToSet) {
-          try {
-            cookiesToSet.forEach(({ name, value, options }) =>
-              cookieStore.set(name, value, options)
-            );
-          } catch {
-            // The `setAll` method was called from a Server Component.
-            // This can be ignored if you have middleware refreshing
-            // user sessions.
-          }
-        },
-      },
-    }
-  );
+      const supabase = createClient();
+      const { data } = await supabase
+        .from('users')
+        .select('avatar_url')
+        .eq('id', user.id)
+        .single();
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+      if (data && data.avatar_url) {
+        setAvatarUrl(data.avatar_url);
+      }
+    };
 
-  if (!user) return;
+    loadAvatar();
 
-  const response = await db.query.users.findFirst({
-    where: (u, { eq }) => eq(u.id, user.id),
-  });
+    // Listen for avatar updates
+    const handleAvatarUpdate = (event: any) => {
+      setAvatarUrl(event.detail.avatarUrl);
+    };
 
-  let avatarPath;
-  if (!response) return;
+    window.addEventListener('avatarUpdated', handleAvatarUpdate);
 
-  if (!response.avatarUrl) avatarPath = '';
-  else {
-    avatarPath = supabase.storage
-      .from('avatars')
-      .getPublicUrl(response.avatarUrl)?.data.publicUrl;
-  }
-
-  const profile = {
-    ...response,
-    avatarUrl: avatarPath,
-  };
+    return () => {
+      window.removeEventListener('avatarUpdated', handleAvatarUpdate);
+    };
+  }, [user]);
 
   return (
     <article
@@ -80,7 +58,7 @@ const UserCard: React.FC<UserCardProps> = async ({ subscription }) => {
       <UserProfile>
         <aside className="flex justify-center items-center gap-2 cursor-pointer hover:opacity-80 transition-opacity">
           <Avatar>
-            <AvatarImage src={profile.avatarUrl} />
+            <AvatarImage src={avatarUrl} />
             <AvatarFallback>
               <CypressProfileIcon />
             </AvatarFallback>
@@ -95,7 +73,7 @@ const UserCard: React.FC<UserCardProps> = async ({ subscription }) => {
             overflow-ellipsis
             "
             >
-              {profile.email}
+              {user?.email}
             </small>
           </div>
         </aside>

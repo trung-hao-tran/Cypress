@@ -1,20 +1,17 @@
 'use client';
 import { MAX_FOLDERS_FREE_PLAN } from '@/lib/constants';
 import { useAppState } from '@/lib/providers/state-provider';
-import { Subscription } from '@/lib/supabase/supabase.types';
 import React, { useEffect, useState } from 'react';
 import { Progress } from '../ui/progress';
 import CypressDiamondIcon from '../icons/cypressDiamongIcon';
+import { useSupabaseUser } from '@/lib/providers/supabase-user-provider';
 
 interface PlanUsageProps {
   foldersLength: number;
-  subscription: Subscription | null;
 }
 
-const PlanUsage: React.FC<PlanUsageProps> = ({
-  foldersLength,
-  subscription,
-}) => {
+const PlanUsage: React.FC<PlanUsageProps> = ({ foldersLength }) => {
+  const { subscription } = useSupabaseUser();
   const { workspaceId, state } = useAppState();
   const [usagePercentage, setUsagePercentage] = useState(
     (foldersLength / MAX_FOLDERS_FREE_PLAN) * 100

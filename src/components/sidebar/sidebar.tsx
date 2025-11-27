@@ -7,7 +7,6 @@ import {
   getFolders,
   getPrivateWorkspaces,
   getSharedWorkspaces,
-  getUserSubscriptionStatus,
 } from '@/lib/supabase/queries';
 import { redirect } from 'next/navigation';
 import { twMerge } from 'tailwind-merge';
@@ -57,16 +56,12 @@ const Sidebar: React.FC<SidebarProps> = async ({ params, className }) => {
 
   if (!user) return;
 
-  //subscr
-  const { data: subscriptionData, error: subscriptionError } =
-    await getUserSubscriptionStatus(user.id);
-
   //folders
   const { data: workspaceFolderData, error: foldersError } = await getFolders(
     workspaceId
   );
   //error
-  if (subscriptionError || foldersError) redirect('/dashboard');
+  if (foldersError) redirect('/dashboard');
 
   const [privateWorkspaces, collaboratingWorkspaces, sharedWorkspaces] =
     await Promise.all([
@@ -96,7 +91,6 @@ const Sidebar: React.FC<SidebarProps> = async ({ params, className }) => {
         />
         <PlanUsage
           foldersLength={workspaceFolderData?.length || 0}
-          subscription={subscriptionData}
         />
         <NativeNavigation myWorkspaceId={workspaceId} />
         <FavoritesScrollArea workspaceId={workspaceId} />
@@ -110,7 +104,7 @@ const Sidebar: React.FC<SidebarProps> = async ({ params, className }) => {
           />
         </ScrollArea>
       </div>
-      <UserCard subscription={subscriptionData} />
+      <UserCard />
     </aside>
   );
 };

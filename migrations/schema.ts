@@ -1,22 +1,10 @@
-import { pgTable, uuid, timestamp, text, foreignKey, pgPolicy, jsonb, boolean, check, bigint, integer, pgEnum } from "drizzle-orm/pg-core"
-import { sql } from "drizzle-orm"
+import { pgTable, foreignKey, uuid, timestamp, text, pgPolicy, jsonb, boolean, check, bigint, integer, pgEnum } from "drizzle-orm/pg-core"
+import { sql, relations } from "drizzle-orm"
 
 export const pricingPlanInterval = pgEnum("pricing_plan_interval", ['day', 'week', 'month', 'year'])
 export const pricingType = pgEnum("pricing_type", ['one_time', 'recurring'])
 export const subscriptionStatus = pgEnum("subscription_status", ['trialing', 'active', 'canceled', 'incomplete', 'incomplete_expired', 'past_due', 'unpaid'])
 
-
-export const workspaces = pgTable("workspaces", {
-	id: uuid().defaultRandom().primaryKey().notNull(),
-	createdAt: timestamp("created_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
-	workspaceOwner: uuid("workspace_owner").notNull(),
-	title: text().notNull(),
-	iconId: text("icon_id").notNull(),
-	data: text(),
-	inTrash: text("in_trash"),
-	logo: text(),
-	bannerUrl: text("banner_url"),
-});
 
 export const folders = pgTable("folders", {
 	id: uuid().defaultRandom().primaryKey().notNull(),
@@ -43,6 +31,7 @@ export const files = pgTable("files", {
 	iconId: text("icon_id").notNull(),
 	data: text(),
 	inTrash: text("in_trash"),
+	inFavorite: text("in_favorite"),
 	bannerUrl: text("banner_url"),
 	workspaceId: uuid("workspace_id").notNull(),
 	folderId: uuid("folder_id").notNull(),
@@ -58,6 +47,25 @@ export const files = pgTable("files", {
 			name: "files_workspace_id_workspaces_id_fk"
 		}).onDelete("cascade"),
 ]);
+
+export const collaborators = pgTable("collaborators", {
+	id: uuid().defaultRandom().primaryKey().notNull(),
+	workspaceId: uuid("workspace_id").notNull(),
+	createdAt: timestamp("created_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+	userId: uuid("user_id").notNull(),
+});
+
+export const workspaces = pgTable("workspaces", {
+	id: uuid().defaultRandom().primaryKey().notNull(),
+	createdAt: timestamp("created_at", { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+	workspaceOwner: uuid("workspace_owner").notNull(),
+	title: text().notNull(),
+	iconId: text("icon_id").notNull(),
+	data: text(),
+	inTrash: text("in_trash"),
+	logo: text(),
+	bannerUrl: text("banner_url"),
+});
 
 export const users = pgTable("users", {
 	id: uuid().primaryKey().notNull(),
@@ -131,8 +139,8 @@ export const subscriptions = pgTable("subscriptions", {
 	quantity: integer(),
 	cancelAtPeriodEnd: boolean("cancel_at_period_end"),
 	created: timestamp({ withTimezone: true, mode: 'string' }).default(sql`timezone('utc'::text, now())`).notNull(),
-	currentPeriodStart: timestamp("current_period_start", { withTimezone: true, mode: 'string' }).default(sql`timezone('utc'::text, now())`).notNull(),
-	currentPeriodEnd: timestamp("current_period_end", { withTimezone: true, mode: 'string' }).default(sql`timezone('utc'::text, now())`).notNull(),
+	currentPeriodStart: timestamp("current_period_start", { withTimezone: true, mode: 'string' }),
+	currentPeriodEnd: timestamp("current_period_end", { withTimezone: true, mode: 'string' }),
 	endedAt: timestamp("ended_at", { withTimezone: true, mode: 'string' }).default(sql`timezone('utc'::text, now())`),
 	cancelAt: timestamp("cancel_at", { withTimezone: true, mode: 'string' }).default(sql`timezone('utc'::text, now())`),
 	canceledAt: timestamp("canceled_at", { withTimezone: true, mode: 'string' }).default(sql`timezone('utc'::text, now())`),
@@ -140,14 +148,21 @@ export const subscriptions = pgTable("subscriptions", {
 	trialEnd: timestamp("trial_end", { withTimezone: true, mode: 'string' }).default(sql`timezone('utc'::text, now())`),
 }, (table) => [
 	foreignKey({
-			columns: [table.priceId],
-			foreignColumns: [prices.id],
-			name: "subscriptions_price_id_fkey"
-		}),
-	foreignKey({
 			columns: [table.userId],
 			foreignColumns: [users.id],
 			name: "subscriptions_user_id_fkey"
 		}),
 	pgPolicy("Can only view own subs data.", { as: "permissive", for: "select", to: ["public"], using: sql`(( SELECT auth.uid() AS uid) = user_id)` }),
 ]);
+
+// Relations
+export const productsRelations = relations(products, ({ many }) => ({
+	prices: many(prices),
+}));
+
+export const pricesRelations = relations(prices, ({ one }) => ({
+	product: one(products, {
+		fields: [prices.productId],
+		references: [products.id],
+	}),
+}));

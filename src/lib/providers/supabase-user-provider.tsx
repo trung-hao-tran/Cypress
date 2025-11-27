@@ -10,11 +10,13 @@ import { useToast } from '@/components/ui/use-toast';
 type SupabaseUserContextType = {
   user: AuthUser | null;
   subscription: Subscription | null;
+  refreshSubscription: () => Promise<void>;
 };
 
 const SupabaseUserContext = createContext<SupabaseUserContextType>({
   user: null,
   subscription: null,
+  refreshSubscription: async () => {},
 });
 
 export const useSupabaseUser = () => {
@@ -33,6 +35,20 @@ export const SupabaseUserProvider: React.FC<SupabaseUserProviderProps> = ({
   const { toast } = useToast();
 
   const supabase = createClient();
+
+  const refreshSubscription = async () => {
+    if (user) {
+      const { data, error } = await getUserSubscriptionStatus(user.id);
+      if (data) setSubscription(data);
+      if (error) {
+        toast({
+          title: 'Unexpected Error',
+          description:
+            'Oppse! An unexpected error happened. Try again later.',
+        });
+      }
+    }
+  };
 
   //Fetch the user details
   //subscrip
@@ -58,7 +74,7 @@ export const SupabaseUserProvider: React.FC<SupabaseUserProviderProps> = ({
     getUser();
   }, [supabase, toast]);
   return (
-    <SupabaseUserContext.Provider value={{ user, subscription }}>
+    <SupabaseUserContext.Provider value={{ user, subscription, refreshSubscription }}>
       {children}
     </SupabaseUserContext.Provider>
   );

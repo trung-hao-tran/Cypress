@@ -505,8 +505,8 @@ const QuillEditor: React.FC<QuillEditorProps> = ({
         room.track({
           id: user.id,
           email: user.email?.split('@')[0],
-          avatarUrl: response.avatarUrl
-            ? supabase.storage.from('avatars').getPublicUrl(response.avatarUrl)
+          avatarUrl: response.avatar_url
+            ? supabase.storage.from('avatars').getPublicUrl(response.avatar_url)
                 .data.publicUrl
             : '',
         });
@@ -515,6 +515,28 @@ const QuillEditor: React.FC<QuillEditorProps> = ({
       supabase.removeChannel(room);
     };
   }, [fileId, quill, supabase, user]);
+
+  // Listen for avatar updates
+  useEffect(() => {
+    const handleAvatarUpdate = (event: any) => {
+      if (user && event.detail.avatarUrl) {
+        // Update the current user's avatar in collaborators list
+        setCollaborators((prev) =>
+          prev.map((collab) =>
+            collab.id === user.id
+              ? { ...collab, avatarUrl: event.detail.avatarUrl }
+              : collab
+          )
+        );
+      }
+    };
+
+    window.addEventListener('avatarUpdated', handleAvatarUpdate);
+
+    return () => {
+      window.removeEventListener('avatarUpdated', handleAvatarUpdate);
+    };
+  }, [user]);
 
   return (
     <>
