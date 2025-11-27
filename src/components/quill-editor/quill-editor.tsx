@@ -403,43 +403,43 @@ const QuillEditor: React.FC<QuillEditorProps> = ({
       const contents = quill.getContents();
       const quillLength = quill.getLength();
       saveTimerRef.current = setTimeout(async () => {
-        // if (contents && quillLength !== 1 && fileId) {
-        //   if (dirType == 'workspace') {
-        //     dispatch({
-        //       type: 'UPDATE_WORKSPACE',
-        //       payload: {
-        //         workspace: { data: JSON.stringify(contents) },
-        //         workspaceId: fileId,
-        //       },
-        //     });
-        //     await updateWorkspace({ data: JSON.stringify(contents) }, fileId);
-        //   }
-        //   if (dirType == 'folder') {
-        //     if (!workspaceId) return;
-        //     dispatch({
-        //       type: 'UPDATE_FOLDER',
-        //       payload: {
-        //         folder: { data: JSON.stringify(contents) },
-        //         workspaceId,
-        //         folderId: fileId,
-        //       },
-        //     });
-        //     await updateFolder({ data: JSON.stringify(contents) }, fileId);
-        //   }
-        //   if (dirType == 'file') {
-        //     if (!workspaceId || !folderId) return;
-        //     dispatch({
-        //       type: 'UPDATE_FILE',
-        //       payload: {
-        //         file: { data: JSON.stringify(contents) },
-        //         workspaceId,
-        //         folderId: folderId,
-        //         fileId,
-        //       },
-        //     });
-        //     await updateFile({ data: JSON.stringify(contents) }, fileId);
-        //   }
-        // }
+        if (contents && quillLength !== 1 && fileId) {
+          if (dirType == 'workspace') {
+            dispatch({
+              type: 'UPDATE_WORKSPACE',
+              payload: {
+                workspace: { data: JSON.stringify(contents) },
+                workspaceId: fileId,
+              },
+            });
+            await updateWorkspace({ data: JSON.stringify(contents) }, fileId);
+          }
+          if (dirType == 'folder') {
+            if (!workspaceId) return;
+            dispatch({
+              type: 'UPDATE_FOLDER',
+              payload: {
+                folder: { data: JSON.stringify(contents) },
+                workspaceId,
+                folderId: fileId,
+              },
+            });
+            await updateFolder({ data: JSON.stringify(contents) }, fileId);
+          }
+          if (dirType == 'file') {
+            if (!workspaceId || !folderId) return;
+            dispatch({
+              type: 'UPDATE_FILE',
+              payload: {
+                file: { data: JSON.stringify(contents) },
+                workspaceId,
+                folderId: folderId,
+                fileId,
+              },
+            });
+            await updateFile({ data: JSON.stringify(contents) }, fileId);
+          }
+        }
         setSaving(false);
       }, 850);
       socket.emit('send-changes', delta, fileId);
@@ -505,9 +505,9 @@ const QuillEditor: React.FC<QuillEditorProps> = ({
         room.track({
           id: user.id,
           email: user.email?.split('@')[0],
-          avatarUrl: response.avatar_url
-            ? supabase.storage.from('avatars').getPublicUrl(response.avatar_url)
-                .data.publicUrl
+          avatarUrl: response.avatarUrl
+            ? supabase.storage.from('avatars').getPublicUrl(response.avatarUrl)
+              .data.publicUrl
             : '',
         });
       });
@@ -554,15 +554,15 @@ const QuillEditor: React.FC<QuillEditorProps> = ({
         sm:p-2
         p-8"
       >
-          <div>{breadCrumbs}</div>
-          <div className="flex items-center gap-4">
-            <div className="flex items-center justify-center h-10">
-              {collaborators?.map((collaborator) => (
-                <TooltipProvider key={collaborator.id}>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Avatar
-                        className="
+        <div>{breadCrumbs}</div>
+        <div className="flex items-center gap-4">
+          <div className="flex items-center justify-center h-10">
+            {collaborators?.map((collaborator) => (
+              <TooltipProvider key={collaborator.id}>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Avatar
+                      className="
                     -ml-3 
                     bg-background 
                     border-2 
@@ -574,49 +574,49 @@ const QuillEditor: React.FC<QuillEditorProps> = ({
                     w-8 
                     rounded-full
                     "
-                      >
-                        <AvatarImage
-                          src={
-                            collaborator.avatarUrl ? collaborator.avatarUrl : ''
-                          }
-                          className="rounded-full"
-                        />
-                        <AvatarFallback>
-                          {collaborator.email.substring(0, 2).toUpperCase()}
-                        </AvatarFallback>
-                      </Avatar>
-                    </TooltipTrigger>
-                    <TooltipContent>{collaborator.email}</TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-              ))}
-            </div>
-            {saving ? (
-              <Badge
-                variant="secondary"
-                className="bg-orange-600 top-4
+                    >
+                      <AvatarImage
+                        src={
+                          collaborator.avatarUrl ? collaborator.avatarUrl : ''
+                        }
+                        className="rounded-full"
+                      />
+                      <AvatarFallback>
+                        {collaborator.email.substring(0, 2).toUpperCase()}
+                      </AvatarFallback>
+                    </Avatar>
+                  </TooltipTrigger>
+                  <TooltipContent>{collaborator.email}</TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            ))}
+          </div>
+          {saving ? (
+            <Badge
+              variant="secondary"
+              className="bg-orange-600 top-4
                 text-white
                 right-4
                 z-50
                 "
-              >
-                Saving...
-              </Badge>
-            ) : (
-              <Badge
-                variant="secondary"
-                className="bg-emerald-600 
+            >
+              Saving...
+            </Badge>
+          ) : (
+            <Badge
+              variant="secondary"
+              className="bg-emerald-600 
                 top-4
               text-white
               right-4
               z-50
               "
-              >
-                Saved
-              </Badge>
-            )}
-          </div>
+            >
+              Saved
+            </Badge>
+          )}
         </div>
+      </div>
       {details.inTrash && (
         <article
           className="py-2
