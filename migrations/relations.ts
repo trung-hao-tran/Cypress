@@ -1,7 +1,7 @@
 import { relations } from "drizzle-orm/relations";
-import { workspaces, folders, files, usersInAuth, users, customers, products, prices, subscriptions } from "./schema";
+import { workspaces, folders, files, users, customers, products, prices, subscriptions } from "./schema";
 
-export const foldersRelations = relations(folders, ({one, many}) => ({
+export const foldersRelations = relations(folders, ({ one, many }) => ({
 	workspace: one(workspaces, {
 		fields: [folders.workspaceId],
 		references: [workspaces.id]
@@ -9,12 +9,12 @@ export const foldersRelations = relations(folders, ({one, many}) => ({
 	files: many(files),
 }));
 
-export const workspacesRelations = relations(workspaces, ({many}) => ({
+export const workspacesRelations = relations(workspaces, ({ many }) => ({
 	folders: many(folders),
 	files: many(files),
 }));
 
-export const filesRelations = relations(files, ({one}) => ({
+export const filesRelations = relations(files, ({ one }) => ({
 	folder: one(folders, {
 		fields: [files.folderId],
 		references: [folders.id]
@@ -25,40 +25,32 @@ export const filesRelations = relations(files, ({one}) => ({
 	}),
 }));
 
-export const usersRelations = relations(users, ({one}) => ({
-	usersInAuth: one(usersInAuth, {
-		fields: [users.id],
-		references: [usersInAuth.id]
-	}),
-}));
-
-export const usersInAuthRelations = relations(usersInAuth, ({many}) => ({
-	users: many(users),
+export const usersRelations = relations(users, ({ many }) => ({
 	customers: many(customers),
 	subscriptions: many(subscriptions),
 }));
 
-export const customersRelations = relations(customers, ({one}) => ({
-	usersInAuth: one(usersInAuth, {
+export const customersRelations = relations(customers, ({ one }) => ({
+	user: one(users, {
 		fields: [customers.id],
-		references: [usersInAuth.id]
+		references: [users.id]
 	}),
 }));
 
-export const pricesRelations = relations(prices, ({one}) => ({
+export const pricesRelations = relations(prices, ({ one }) => ({
 	product: one(products, {
 		fields: [prices.productId],
 		references: [products.id]
 	}),
 }));
 
-export const productsRelations = relations(products, ({many}) => ({
+export const productsRelations = relations(products, ({ many }) => ({
 	prices: many(prices),
 }));
 
-export const subscriptionsRelations = relations(subscriptions, ({one}) => ({
-	usersInAuth: one(usersInAuth, {
+export const subscriptionsRelations = relations(subscriptions, ({ one }) => ({
+	user: one(users, {
 		fields: [subscriptions.userId],
-		references: [usersInAuth.id]
+		references: [users.id]
 	}),
 }));

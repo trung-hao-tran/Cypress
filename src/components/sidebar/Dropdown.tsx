@@ -14,7 +14,7 @@ import { createFile, updateFile, updateFolder } from '@/lib/supabase/queries';
 import { useToast } from '../ui/use-toast';
 import TooltipComponent from '../global/tooltip-component';
 import { PlusIcon, Trash, Heart } from 'lucide-react';
-import { File } from '@/lib/supabase/supabase.types';
+import { File as FileType } from '@/lib/supabase/supabase.types';
 import { v4 } from 'uuid';
 import { useSupabaseUser } from '@/lib/providers/supabase-user-provider';
 
@@ -77,8 +77,7 @@ const Dropdown: React.FC<DropdownProps> = ({
     }
     if (type === 'file') {
       router.push(
-        `/dashboard/${workspaceId}/${folderId}/${
-          accordionId.split('folder')[1]
+        `/dashboard/${workspaceId}/${folderId}/${accordionId.split('folder')[1]
         }`
       );
     }
@@ -365,7 +364,7 @@ const Dropdown: React.FC<DropdownProps> = ({
 
   const addNewFile = async () => {
     if (!workspaceId) return;
-    const newFile: File = {
+    const newFile: FileType = {
       folderId: id,
       data: null,
       createdAt: new Date().toISOString(),
@@ -454,12 +453,12 @@ const Dropdown: React.FC<DropdownProps> = ({
                 <TooltipComponent message={
                   (listType === 'folder'
                     ? state.workspaces
-                        .find((workspace) => workspace.id === workspaceId)
-                        ?.folders.find((folder) => folder.id === id.split('folder')[0])?.inFavorite
+                      .find((workspace) => workspace.id === workspaceId)
+                      ?.folders.find((folder) => folder.id === id.split('folder')[0])?.inFavorite
                     : state.workspaces
-                        .find((workspace) => workspace.id === workspaceId)
-                        ?.folders.find((folder) => folder.id === id.split('folder')[0])
-                        ?.files.find((file) => file.id === id.split('folder')[1])?.inFavorite
+                      .find((workspace) => workspace.id === workspaceId)
+                      ?.folders.find((folder) => folder.id === id.split('folder')[0])
+                      ?.files.find((file) => file.id === id.split('folder')[1])?.inFavorite
                   ) ? "Remove from favorites" : "Add to favorites"
                 }>
                   <Heart
@@ -470,21 +469,21 @@ const Dropdown: React.FC<DropdownProps> = ({
                         'fill-red-500 text-red-500':
                           listType === 'folder'
                             ? state.workspaces
-                                .find((workspace) => workspace.id === workspaceId)
-                                ?.folders.find((folder) => folder.id === id.split('folder')[0])?.inFavorite
+                              .find((workspace) => workspace.id === workspaceId)
+                              ?.folders.find((folder) => folder.id === id.split('folder')[0])?.inFavorite
                             : state.workspaces
-                                .find((workspace) => workspace.id === workspaceId)
-                                ?.folders.find((folder) => folder.id === id.split('folder')[0])
-                                ?.files.find((file) => file.id === id.split('folder')[1])?.inFavorite,
+                              .find((workspace) => workspace.id === workspaceId)
+                              ?.folders.find((folder) => folder.id === id.split('folder')[0])
+                              ?.files.find((file) => file.id === id.split('folder')[1])?.inFavorite,
                         'text-Neutrals/neutrals-7 hover:text-red-500':
                           !(listType === 'folder'
                             ? state.workspaces
-                                .find((workspace) => workspace.id === workspaceId)
-                                ?.folders.find((folder) => folder.id === id.split('folder')[0])?.inFavorite
+                              .find((workspace) => workspace.id === workspaceId)
+                              ?.folders.find((folder) => folder.id === id.split('folder')[0])?.inFavorite
                             : state.workspaces
-                                .find((workspace) => workspace.id === workspaceId)
-                                ?.folders.find((folder) => folder.id === id.split('folder')[0])
-                                ?.files.find((file) => file.id === id.split('folder')[1])?.inFavorite)
+                              .find((workspace) => workspace.id === workspaceId)
+                              ?.folders.find((folder) => folder.id === id.split('folder')[0])
+                              ?.files.find((file) => file.id === id.split('folder')[1])?.inFavorite)
                       }
                     )}
                   />

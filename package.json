@@ -3,9 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbo",
+    "dev": "NODE_OPTIONS='--dns-result-order=ipv4first' next dev --turbo",
     "build": "next build",
-    "start": "next start",
+    "start": "NODE_OPTIONS='--dns-result-order=ipv4first' next start",
     "lint": "next lint",
     "push": "drizzle-kit push",
     "pull": "drizzle-kit pull",

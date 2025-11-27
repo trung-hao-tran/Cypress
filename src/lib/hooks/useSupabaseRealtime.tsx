@@ -2,7 +2,7 @@ import { createClient } from '@/lib/supabase/client';
 import React, { useEffect } from 'react';
 import { useAppState } from '../providers/state-provider';
 
-import { File } from '../supabase/supabase.types';
+import { File as FileType } from '../supabase/supabase.types';
 import { useRouter } from 'next/navigation';
 
 const useSupabaseRealtime = () => {
@@ -29,7 +29,7 @@ const useSupabaseRealtime = () => {
                 ?.folders.find((folder) => folder.id === folderId)
                 ?.files.find((file) => file.id === fileId)
             ) {
-              const newFile: File = {
+              const newFile: FileType = {
                 id: payload.new.id,
                 workspaceId: payload.new.workspace_id,
                 folderId: payload.new.folder_id,
@@ -38,6 +38,7 @@ const useSupabaseRealtime = () => {
                 iconId: payload.new.icon_id,
                 data: payload.new.data,
                 inTrash: payload.new.in_trash,
+                inFavorite: payload.new.in_favorite,
                 bannerUrl: payload.new.banner_url,
               };
               dispatch({

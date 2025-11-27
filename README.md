@@ -1,36 +1,139 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Notion Clone
 
-## Getting Started
+A powerful, real-time collaborative workspace application inspired by Notion. This project features a rich text editor, hierarchical workspace management, and subscription capabilities, built with modern web technologies.
 
-First, run the development server:
+## 🚀 Key Features
+
+-   **Real-time Collaboration**: Seamlessly edit documents with others in real-time using Socket.io.
+-   **Workspace Hierarchy**: Organize content with Workspaces, Folders, and Files.
+-   **Rich Text Editor**: A customized Quill-based editor supporting text formatting, media embedding, and more.
+-   **Live Cursors**: See where other users are editing in real-time.
+-   **Subscription Management**: Integrated Stripe payments for Pro plan upgrades.
+-   **Authentication**: Secure user authentication and management via Supabase.
+-   **Responsive Design**: Beautiful, responsive UI built with Tailwind CSS and Radix UI.
+-   **Dark/Light Mode**: Native support for dark and light themes.
+
+## 🛠️ Tech Stack
+
+-   **Frontend**: [Next.js 16](https://nextjs.org/) (App Router), [React 19](https://react.dev/)
+-   **Styling**: [Tailwind CSS](https://tailwindcss.com/), [Radix UI](https://www.radix-ui.com/), [Lucide Icons](https://lucide.dev/)
+-   **Backend & Database**: [Supabase](https://supabase.com/) (PostgreSQL), [Drizzle ORM](https://orm.drizzle.team/)
+-   **Real-time**: [Socket.io](https://socket.io/)
+-   **Payments**: [Stripe](https://stripe.com/)
+-   **Form Handling**: React Hook Form, Zod
+
+## 🏁 Getting Started
+
+### Prerequisites
+
+-   **Node.js**: Version 20.9.0 or higher (Required for Next.js 16).
+-   **Docker**: (Optional) Recommended for running the app with Stripe CLI locally.
+
+### Environment Setup
+
+Create a `.env` file in the root directory with the following variables:
+
+```env
+# Database
+DATABASE_URL=postgresql://...
+
+# Supabase
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+
+# Stripe
+STRIPE_SECRET_KEY=sk_test_...
+STRIPE_WEBHOOK_SECRET=whsec_...
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_...
+
+# App
+NEXT_PUBLIC_SITE_URL=http://localhost:3000
+```
+
+### Installation
+
+```bash
+npm install
+# or
+yarn install
+```
+
+### Running Locally
+
+**Option 1: Standard Development Server**
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+```
+Visit [http://localhost:3000](http://localhost:3000).
+
+**Option 2: Docker (with Stripe CLI)**
+
+This setup runs the Next.js app and the Stripe CLI (for webhook forwarding) in containers.
+
+#### Docker Prerequisites
+
+1. **Docker Desktop** installed and running
+2. **IPv6 enabled** in Docker (required for Supabase connectivity):
+   - Open Docker Desktop → Settings → Docker Engine
+   - Add the following to the JSON configuration:
+     ```json
+     {
+       "ipv6": true,
+       "fixed-cidr-v6": "fd00::/80"
+     }
+     ```
+   - Click "Apply & Restart"
+
+#### Running with Docker
+
+```bash
+docker-compose up --build
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+The app will be available at [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+#### How It Works
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- Environment variables are passed directly through `docker-compose.yml` (not from `.env` file)
+- The app connects to your external Supabase database via IPv6
+- Stripe CLI forwards webhook events to the containerized app
+- All dependencies are isolated in containers
 
-## Learn More
+#### Troubleshooting Docker
 
-To learn more about Next.js, take a look at the following resources:
+**Issue**: `Error: connect ENETUNREACH` or network unreachable errors
+**Solution**: Ensure IPv6 is enabled in Docker Desktop settings (see prerequisites above)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+**Issue**: `Pool overlaps with other one on this address space`
+**Solution**: Remove conflicting Docker networks:
+```bash
+docker network prune
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+**Issue**: Environment variables not loading
+**Solution**: Variables are configured in `docker-compose.yml`, not `.env`. Update `docker-compose.yml` if you need to change them.
 
-## Deploy on Vercel
+*Note: The Dockerfile uses Node.js 22-alpine and Next.js standalone output for optimized production builds.*
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 🗄️ Database Migrations
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+This project uses Drizzle Kit for database migrations.
+
+-   **Push changes to DB**: `npm run push`
+-   **Generate migrations**: `npm run generate`
+-   **Run migrations**: `npm run migrate` (or `npm run up`)
+-   **Open Drizzle Studio**: `npx drizzle-kit studio`
+
+## 📂 Project Structure
+
+-   `src/app`: Next.js App Router pages and layouts.
+-   `src/components`: Reusable UI components (shadcn/ui, custom).
+-   `src/lib`: Utility functions, Supabase client, Stripe client, database schema.
+    -   `src/lib/supabase/schema.ts`: Database schema definitions.
+-   `src/providers`: React Context providers (AppState, SupabaseUser, etc.).
+-   `migrations`: SQL migration files generated by Drizzle.
+
+## 🤝 Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.

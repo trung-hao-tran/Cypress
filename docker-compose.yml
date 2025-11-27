@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    dns:
+      - 8.8.8.8
+      - 8.8.4.4
+    environment:
+      - NODE_OPTIONS=--dns-result-order=ipv4first
+      - NODE_ENV=production
+      - NEXT_PUBLIC_SITE_URL=http://localhost:3000
+      - DATABASE_URL=postgresql://postgres:G5n1aRfpLKvq4lrD@db.gtvttwzhusrjwlietwyu.supabase.co:5432/postgres
+      - NEXT_PUBLIC_SUPABASE_URL=https://gtvttwzhusrjwlietwyu.supabase.co
+      - NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd0dnR0d3podXNyandsaWV0d3l1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI4MDIyOTQsImV4cCI6MjA3ODM3ODI5NH0.QNiblY4aXqmOzXWOu_FwPmKYIEho6Xhw6Jv8chpj75Q
+      - SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd0dnR0d3podXNyandsaWV0d3l1Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2MjgwMjI5NCwiZXhwIjoyMDc4Mzc4Mjk0fQ.9YoiHdA-8nPD2wrPNHPkw9Olclr8DEpqACFne-yviCs
+      - PW=G5n1aRfpLKvq4lrD
+      - NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_51SVOYEC3SLpZ8LjFyhyns67iTBzqAtQhFyJQ9hozjhVLm0xx9Hbko3d4jh4uUuuKJ1MzoMNCqzHjzZjj1n3ZADtO00lZB6WIJr
+      - STRIPE_SECRET_KEY=sk_test_51SVOYEC3SLpZ8LjFrWrySrBvGx9LRGrZO8Nshkt6czQrV33Lc8FhhUMZGTv1e8th1fBESuhMa0o3FM29wDbnUI2J00M48S5ArA
+      - STRIPE_WEBHOOK_SECRET=whsec_465697b5336f5785bf1c6fc1572fd82e0aa825756c9b0d982f0eb6aae8409988
+    depends_on:
+      - stripe
+    networks:
+      - app-network
+
+  stripe:
+    image: stripe/stripe-cli:latest
+    command: listen --forward-to http://app:3000/api/webhook
+    environment:
+      - STRIPE_API_KEY=${STRIPE_SECRET_KEY}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+    enable_ipv6: true

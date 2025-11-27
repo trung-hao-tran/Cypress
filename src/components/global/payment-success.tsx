@@ -7,7 +7,7 @@ import WelcomeProModal from './welcome-pro-modal';
 const PaymentSuccess = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const redirectStatus = searchParams.get('redirect_status');
+  const redirectStatus = searchParams?.get('redirect_status');
   const [showWelcome, setShowWelcome] = useState(false);
 
   useEffect(() => {
